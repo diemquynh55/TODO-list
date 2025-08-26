@@ -1,0 +1,192 @@
+:root {
+  --background-color: #fceef5; /* nền hồng rất nhạt */
+  --main-color: #ff9eb5; /* hồng pastel chủ đạo */
+  --text-color: #444444;
+  --white: #ffffff;
+  --cover-color: linear-gradient(135deg, #ffd6e8, #fff0f5);
+  --pages-color: linear-gradient(135deg, #ffe5ec, #fff8f0);
+  --border: 0.2rem solid rgba(255, 158, 181, 0.3);
+  --box-shadow: 0 8px 20px rgba(255, 158, 181, 0.3);
+}
+
+body {
+  background: var(--background-color);
+  font-family: "Poppins", Arial, sans-serif;
+  text-align: center;
+  margin-top: 50px;
+  color: var(--text-color);
+}
+
+#todo-container {
+  background: var(--pages-color);
+  width: 400px;
+  margin: 0 auto;
+  border: var(--border);
+  padding: 20px;
+  color: var(--text-color);
+  border-radius: 15px;
+  box-shadow: var(--box-shadow);
+  transition: 0.3s;
+}
+
+#header {
+  margin: 5px;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--main-color);
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: var(--main-color);
+}
+
+#input-box {
+  width: 200px;
+  padding: 10px;
+  border: 1px solid #ffc6d9;
+  border-radius: 5px;
+  margin-right: 5px;
+  font-size: 16px;
+  flex: 1;
+  min-width: 120px;
+}
+
+#input-button {
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.4s;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--main-color);
+  color: var(--white);
+}
+
+#input-button:hover {
+  background-color: #ffafc9;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  text-align: left;
+}
+
+li {
+  border: 1px solid #ffd6e8;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  background: var(--white);
+  box-shadow: 0 4px 8px rgba(255, 158, 181, 0.2);
+}
+
+.edit-btn,
+.delete-btn {
+  float: right;
+  color: var(--main-color);
+  cursor: pointer;
+  margin: 3px 5px;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: #ffe5ec;
+  font-size: 14px;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  background: var(--main-color);
+  color: var(--white);
+}
+
+.completed {
+  text-decoration: line-through;
+  color: #aaa;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+/* Bố cục form input */
+#todo-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap; /* Cho phép xuống dòng khi hẹp */
+}
+
+#category-select {
+  padding: 10px;
+  border: 1px solid #ffc6d9;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Task list */
+.task-title {
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+/* Nhãn category */
+.category-label {
+  background: var(--main-color);
+  color: var(--white);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+/* Đặt lại button trong list cho cân đối */
+.edit-btn,
+.delete-btn {
+  margin-left: 5px;
+}
+
+#due-date {
+  padding: 10px;
+  border: 1px solid #ffc6d9;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+li {
+  position: relative;
+}
+
+.due-date {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: #666;
+}
+#category-select,
+#due-date,
+#input-button {
+  flex-shrink: 0; /* không co lại quá nhỏ */
+}
+input,
+select,
+button,
+textarea,
+label,
+span {
+  font-family: "Poppins", Arial, sans-serif;
+  font-size: 15px;
+}
+.task-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.due-date {
+  font-size: 13px;
+  font-style: italic;
+  color: #777;
+}
