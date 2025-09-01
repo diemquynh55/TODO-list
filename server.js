@@ -197,5 +197,7 @@ app.post("/api/categories", async (req, res) => {
 });
 
 // ========== START SERVER ==========
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`✅ API running on port ${port}`));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`API running on port ${PORT}`);
+});
