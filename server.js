@@ -5,36 +5,44 @@ const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// CORS: chỉ cho phép từ GitHub Pages của bạn
+app.use(
+  cors({
+    origin: ["https://diemquynh55.github.io"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+
 app.use(express.json());
 
-// Pool kết nối MySQL
+// Pool kết nối MySQL: ưu tiên biến Railway, fallback sang .env
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.MYSQLHOST || process.env.DB_HOST,
+  port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
+  user: process.env.MYSQLUSER || process.env.DB_USER,
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
+  database: process.env.MYSQLDATABASE || process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
 });
 
-// Helper: lấy toàn bộ tasks (join category name)
+// Healthcheck
+app.get("/health", (_req, res) => res.json({ ok: true }));
+
+// ========== Helper: lấy toàn bộ tasks ==========
 async function getAllTasks() {
   const sql = `
-  SELECT t.id, t.title, t.status, t.due_date, t.category_id,
-         c.name AS category_name, t.position
-  FROM tasks t
-  LEFT JOIN categories c ON t.category_id = c.id
-  ORDER BY 
-    CASE 
-      WHEN t.due_date IS NULL THEN 1
-      ELSE 0
-    END,
-    t.due_date ASC,
-    t.position ASC, 
-    t.id DESC
-`;
+    SELECT t.id, t.title, t.status, t.due_date, t.category_id,
+           c.name AS category_name, t.position
+    FROM tasks t
+    LEFT JOIN categories c ON t.category_id = c.id
+    ORDER BY 
+      CASE WHEN t.due_date IS NULL THEN 1 ELSE 0 END,
+      t.due_date ASC,
+      t.position ASC, 
+      t.id DESC
+  `;
   const [rows] = await pool.query(sql);
   return rows;
 }
@@ -52,12 +60,12 @@ app.get("/api/tasks", async (req, res) => {
 
 app.post("/api/tasks", async (req, res) => {
   try {
-    const { title, category_id, due_date } = req.body; // thêm due_date
+    const { title, category_id, due_date } = req.body;
     if (!title || !title.trim()) {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    // ⚡ Kiểm tra deadline trước khi insert
+    // Kiểm tra deadline
     if (due_date) {
       const today = new Date().toISOString().split("T")[0];
       if (due_date < today) {
@@ -72,7 +80,7 @@ app.post("/api/tasks", async (req, res) => {
 
     const [result] = await pool.query(
       "INSERT INTO tasks (title, status, position, category_id, due_date) VALUES (?, 0, ?, ?, ?)",
-      [title.trim(), position, catId, due_date || null] // thêm due_date
+      [title.trim(), position, catId, due_date || null]
     );
 
     const [rows] = await pool.query(
@@ -190,4 +198,4 @@ app.post("/api/categories", async (req, res) => {
 
 // ========== START SERVER ==========
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`API running on http://localhost:${port}`));
+app.listen(port, () => console.log(`✅ API running on port ${port}`));
