@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000/api"; // backend Express
+const API_BASE = "todo-list-production-2556.up.railway.app"; // backend Express
 
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
