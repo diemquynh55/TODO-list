@@ -27,6 +27,16 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
+// after pool creation
+(async () => {
+  try {
+    const [rows] = await pool.query("SELECT DATABASE() AS db, 1+1 AS ok");
+    console.log("✅ DB test ok:", rows[0]);
+  } catch (err) {
+    console.error("❌ DB test failed:", err.message);
+  }
+})();
+
 // Healthcheck
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
