@@ -9,8 +9,9 @@ const app = express();
 // CORS: chỉ cho phép từ GitHub Pages của bạn
 app.use(
   cors({
-    origin: ["https://diemquynh55.github.io"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: "https://diemquynh55.github.io", // ✅ chỉ domain gốc
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    credentials: true,
   })
 );
 
