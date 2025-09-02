@@ -43,7 +43,7 @@ function renderTask(task) {
   checkbox.addEventListener("click", async () => {
     const checked = checkbox.checked ? 1 : 0;
     try {
-      await fetch(`${API_BASE}/tasks/${li.dataset.id}`, {
+      await fetch(`${API_BASE}/api/tasks/${li.dataset.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: checked }),
@@ -62,7 +62,7 @@ function renderTask(task) {
     const updated = prompt("Edit task:", current);
     if (updated !== null) {
       try {
-        await fetch(`${API_BASE}/tasks/${li.dataset.id}`, {
+        await fetch(`${API_BASE}/api/tasks/${li.dataset.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: updated }),
@@ -81,7 +81,9 @@ function renderTask(task) {
   deleteBtn.addEventListener("click", async () => {
     if (!confirm("Are you sure you want to delete this task?")) return;
     try {
-      await fetch(`${API_BASE}/tasks/${li.dataset.id}`, { method: "DELETE" });
+      await fetch(`${API_BASE}/api/tasks/${li.dataset.id}`, {
+        method: "DELETE",
+      });
       li.remove();
       updateCounters();
     } catch (e) {
@@ -95,7 +97,7 @@ function renderTask(task) {
 // Load tất cả tasks
 async function loadTasks() {
   listContainer.innerHTML = "";
-  const res = await fetch(`${API_BASE}/tasks`);
+  const res = await fetch(`${API_BASE}/api/tasks`);
   const tasks = await res.json();
   tasks.forEach(renderTask);
   updateCounters();
@@ -104,7 +106,7 @@ async function loadTasks() {
 // Load categories vào dropdown
 async function loadCategories() {
   try {
-    const res = await fetch(`${API_BASE}/categories`);
+    const res = await fetch(`${API_BASE}/api/categories`);
     const categories = await res.json();
     console.log("Categories from API:", categories);
 
@@ -143,7 +145,7 @@ async function addTask() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/tasks`, {
+    const res = await fetch(`${API_BASE}/api/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, category_id, due_date }), // gửi cả due_date
@@ -180,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         (li) => li.dataset.id
       );
       try {
-        await fetch(`${API_BASE}/tasks/reorder`, {
+        await fetch(`${API_BASE}/api/tasks/reorder`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids }),
