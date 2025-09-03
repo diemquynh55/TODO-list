@@ -171,13 +171,15 @@ app.post("/api/tasks/reorder", async (req, res) => {
 // ========== API CATEGORIES ==========
 app.get("/api/categories", async (_req, res) => {
   try {
+    console.log("🔍 [API] GET /api/categories called");
     const [rows] = await pool.query(
       "SELECT * FROM categories ORDER BY name ASC"
     );
+    console.log("✅ Categories result:", rows);
     res.json(rows);
   } catch (err) {
-    console.error("Error /api/categories:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Error /api/categories:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
