@@ -6,21 +6,16 @@ require("dotenv").config();
 
 const app = express();
 
-// CORS
-const corsOptions = {
-  origin: ["https://diemquynh55.github.io"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
-  credentials: true,
-};
+// --- CORS: Cho phép tất cả để test ---
+app.use(cors());
 
-app.use(cors(corsOptions));
+// hoặc nếu muốn chỉ GitHub Pages:
+// app.use(cors({ origin: "https://diemquynh55.github.io" }));
 
 // Đảm bảo cho preflight request
-app.options("*", cors(corsOptions));
+app.options("*", cors());
 
 app.use(express.json());
-
 // Pool kết nối MySQL: ưu tiên biến Railway, fallback sang .env
 const pool = mysql.createPool({
   host: process.env.MYSQLHOST || process.env.DB_HOST,
