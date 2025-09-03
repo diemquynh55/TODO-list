@@ -67,28 +67,34 @@ app.get("/api/tasks", async (_req, res) => {
 app.post("/api/tasks", async (req, res) => {
   try {
     const { title, category_id, due_date } = req.body;
+
+    // Validate title
     if (!title || !title.trim()) {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    // Validate deadline
-    if (due_date) {
+    // Chuẩn hóa due_date: nếu rỗng -> null
+    let due = null;
+    if (due_date && String(due_date).trim()) {
       const today = new Date().toISOString().split("T")[0];
       if (due_date < today) {
         return res
           .status(400)
           .json({ message: "Deadline phải từ hôm nay trở đi" });
       }
+      due = due_date;
     }
 
     const position = Date.now();
     const catId = category_id ? Number(category_id) : null;
 
+    // Insert task
     const [result] = await pool.query(
       "INSERT INTO tasks (title, status, position, category_id, due_date) VALUES (?, 0, ?, ?, ?)",
-      [title.trim(), position, catId, due_date || null]
+      [title.trim(), position, catId, due]
     );
 
+    // Lấy lại task vừa tạo (join category để có tên category luôn)
     const [rows] = await pool.query(
       `SELECT t.id, t.title, t.status, t.category_id, t.due_date, c.name AS category_name
        FROM tasks t
@@ -99,8 +105,8 @@ app.post("/api/tasks", async (req, res) => {
 
     res.status(201).json(rows[0]);
   } catch (err) {
-    console.error("Error POST /api/tasks:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Error POST /api/tasks:", err.message, err.stack);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
