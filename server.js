@@ -6,17 +6,13 @@ require("dotenv").config();
 
 const app = express();
 
-// --- CORS: Cho phép tất cả để test ---
+// ✅ Cho phép tất cả origin (tạm để test cho chắc ăn)
 app.use(cors());
-
-// hoặc nếu muốn chỉ GitHub Pages:
-// app.use(cors({ origin: "https://diemquynh55.github.io" }));
-
-// Đảm bảo cho preflight request
 app.options("*", cors());
 
 app.use(express.json());
-// Pool kết nối MySQL: ưu tiên biến Railway, fallback sang .env
+
+// Pool kết nối MySQL: ưu tiên Railway, fallback .env
 const pool = mysql.createPool({
   host: process.env.MYSQLHOST || process.env.DB_HOST,
   port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
@@ -27,7 +23,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
-// after pool creation
+// Test kết nối DB
 (async () => {
   try {
     const [rows] = await pool.query("SELECT DATABASE() AS db, 1+1 AS ok");
@@ -40,7 +36,7 @@ const pool = mysql.createPool({
 // Healthcheck
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// ========== Helper: lấy toàn bộ tasks ==========
+// ========== Helper ==========
 async function getAllTasks() {
   const sql = `
     SELECT t.id, t.title, t.status, t.due_date, t.category_id,
@@ -58,7 +54,7 @@ async function getAllTasks() {
 }
 
 // ========== API TASKS ==========
-app.get("/api/tasks", async (req, res) => {
+app.get("/api/tasks", async (_req, res) => {
   try {
     const rows = await getAllTasks();
     res.json(rows);
@@ -75,7 +71,7 @@ app.post("/api/tasks", async (req, res) => {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    // Kiểm tra deadline
+    // Validate deadline
     if (due_date) {
       const today = new Date().toISOString().split("T")[0];
       if (due_date < today) {
@@ -94,11 +90,10 @@ app.post("/api/tasks", async (req, res) => {
     );
 
     const [rows] = await pool.query(
-      `
-      SELECT t.id, t.title, t.status, t.category_id, t.due_date, c.name AS category_name
-      FROM tasks t
-      LEFT JOIN categories c ON t.category_id = c.id
-      WHERE t.id = ?`,
+      `SELECT t.id, t.title, t.status, t.category_id, t.due_date, c.name AS category_name
+       FROM tasks t
+       LEFT JOIN categories c ON t.category_id = c.id
+       WHERE t.id = ?`,
       [result.insertId]
     );
 
@@ -174,7 +169,7 @@ app.post("/api/tasks/reorder", async (req, res) => {
 });
 
 // ========== API CATEGORIES ==========
-app.get("/api/categories", async (req, res) => {
+app.get("/api/categories", async (_req, res) => {
   try {
     const [rows] = await pool.query(
       "SELECT * FROM categories ORDER BY name ASC"
@@ -206,8 +201,8 @@ app.post("/api/categories", async (req, res) => {
   }
 });
 
-// ========== START SERVER ==========
+// Start server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`API running on port ${PORT}`);
+  console.log(`🚀 API running on port ${PORT}`);
 });
