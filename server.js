@@ -6,14 +6,18 @@ require("dotenv").config();
 
 const app = express();
 
-// CORS: chỉ cho phép từ GitHub Pages của bạn
-app.use(
-  cors({
-    origin: "https://diemquynh55.github.io", // ✅ chỉ domain gốc
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    credentials: true,
-  })
-);
+// CORS
+const corsOptions = {
+  origin: ["https://diemquynh55.github.io"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// Đảm bảo cho preflight request
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
